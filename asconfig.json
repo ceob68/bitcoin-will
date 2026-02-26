@@ -2,32 +2,49 @@
     "targets": {
         "token": {
             "outFile": "build/MyToken.wasm",
-            "use": ["abort=src/token/index/abort"]
+            "use": [
+                "abort=src/token/index/abort"
+            ]
         },
         "stablecoin": {
             "outFile": "build/MyStableCoin.wasm",
-            "use": ["abort=src/stablecoin/index/abort"]
+            "use": [
+                "abort=src/stablecoin/index/abort"
+            ]
         },
         "peggedcoin": {
             "outFile": "build/MyPeggedCoin.wasm",
-            "use": ["abort=src/pegged-token/index/abort"]
+            "use": [
+                "abort=src/pegged-token/index/abort"
+            ]
         },
         "oraclecoin": {
             "outFile": "build/MyOracleCoin.wasm",
-            "use": ["abort=src/multi-oracle-stablecoin/index/abort"]
+            "use": [
+                "abort=src/multi-oracle-stablecoin/index/abort"
+            ]
         },
         "nft": {
             "outFile": "build/MyNFT.wasm",
-            "use": ["abort=src/nft/index/abort"]
+            "use": [
+                "abort=src/nft/index/abort"
+            ]
         },
         "registry": {
             "outFile": "build/PackageRegistry.wasm",
-            "use": ["abort=src/registry/index/abort"]
+            "use": [
+                "abort=src/registry/index/abort"
+            ]
         },
         "btc-resolver": {
             "initialMemory": 4,
             "outFile": "build/Resolver.wasm",
-            "use": ["abort=src/btc-resolver/index/abort"]
+            "use": [
+                "abort=src/btc-resolver/index/abort"
+            ]
+        },
+        "bitcoinwill": {
+            "outFile": "build/BitcoinWill.wasm"
         }
     },
     "options": {

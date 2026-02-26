@@ -1,0 +1,98 @@
+{
+    "functions": [
+        {
+            "name": "createWill",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "ping",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "claimWill",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "revokeWill",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": []
+        }
+    ],
+    "events": [
+        {
+            "name": "WillCreated",
+            "values": [
+                {
+                    "name": "owner",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "inactivityBlocks",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "heirCount",
+                    "type": "UINT32"
+                }
+            ],
+            "type": "Event"
+        },
+        {
+            "name": "PingSent",
+            "values": [
+                {
+                    "name": "owner",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "blockNumber",
+                    "type": "UINT64"
+                }
+            ],
+            "type": "Event"
+        },
+        {
+            "name": "WillExecuted",
+            "values": [
+                {
+                    "name": "owner",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "claimedBy",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "tokenContract",
+                    "type": "ADDRESS"
+                }
+            ],
+            "type": "Event"
+        },
+        {
+            "name": "WillRevoked",
+            "values": [
+                {
+                    "name": "owner",
+                    "type": "ADDRESS"
+                }
+            ],
+            "type": "Event"
+        }
+    ]
+}
