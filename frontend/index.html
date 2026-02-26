@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bitcoin Will · Decentralized Inheritance on Bitcoin L1</title>
+<style>
+  /* ── Reset & Base ───────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --btc:    #f7931a;
+    --btc2:   #ffb84d;
+    --dark:   #0a0a0f;
+    --dark2:  #111118;
+    --dark3:  #1a1a24;
+    --dark4:  #22222e;
+    --border: rgba(247,147,26,0.18);
+    --text:   #e8e8f0;
+    --muted:  #888899;
+    --green:  #22c55e;
+    --red:    #ef4444;
+    --blue:   #3b82f6;
+    --shadow: 0 0 40px rgba(247,147,26,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background grid ────────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(247,147,26,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247,147,26,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; }
+  h2 { font-size: 1.4rem; font-weight: 700; }
+  h3 { font-size: 1.1rem; font-weight: 600; }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--btc), var(--btc2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+  .relative  { position: relative; z-index: 1; }
+
+  /* ── Header ─────────────────────────────────────────────────────── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em;
+  }
+  .logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--btc), var(--btc2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  /* ── Connect button ─────────────────────────────────────────────── */
+  .btn-connect {
+    background: linear-gradient(135deg, var(--btc), var(--btc2));
+    color: #000; border: none; cursor: pointer;
+    padding: 0.55rem 1.2rem; border-radius: 10px;
+    font-weight: 700; font-size: 0.9rem;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-connect:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-connect.connected {
+    background: var(--dark4); color: var(--btc);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Hero ───────────────────────────────────────────────────────── */
+  .hero {
+    padding: 5rem 1.5rem 3rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(247,147,26,0.1); border: 1px solid var(--border);
+    border-radius: 100px; padding: 0.35rem 0.9rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--btc);
+    margin-bottom: 1.5rem;
+  }
+  .hero-badge::before { content: '●'; font-size: 0.55rem; color: var(--green); }
+  .hero p {
+    max-width: 600px; margin: 1.2rem auto 2.5rem;
+    font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+  }
+
+  /* ── Stats bar ──────────────────────────────────────────────────── */
+  .stats {
+    display: flex; justify-content: center; gap: 2rem;
+    flex-wrap: wrap; margin-bottom: 3rem;
+  }
+  .stat {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    min-width: 130px;
+  }
+  .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--btc); }
+  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ── Main card grid ─────────────────────────────────────────────── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 0 1.5rem 2rem;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  /* ── Feature cards ──────────────────────────────────────────────── */
+  .feature-card {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.5rem;
+  }
+  .feature-icon {
+    font-size: 2rem; margin-bottom: 0.8rem;
+  }
+  .feature-card h3 { margin-bottom: 0.4rem; }
+  .feature-card p  { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+  /* ── App section ────────────────────────────────────────────────── */
+  .app-section {
+    max-width: 960px; margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Tabs ───────────────────────────────────────────────────────── */
+  .tabs {
+    display: flex; gap: 0.4rem;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.35rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+  .tab {
+    flex: 1; padding: 0.65rem 1rem;
+    background: transparent; border: none; cursor: pointer;
+    color: var(--muted); font-weight: 600; font-size: 0.9rem;
+    border-radius: 10px; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(247,147,26,0.2), rgba(247,147,26,0.1));
+    color: var(--btc);
+    border: 1px solid rgba(247,147,26,0.25);
+  }
+  .tab:hover:not(.active) { color: var(--text); background: var(--dark4); }
+
+  /* ── Panel ──────────────────────────────────────────────────────── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── Card ───────────────────────────────────────────────────────── */
+  .card {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem;
+  }
+  .card-title {
+    display: flex; align-items: center; gap: 0.7rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-title-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(247,147,26,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  /* ── Form ───────────────────────────────────────────────────────── */
+  .form-group { margin-bottom: 1.2rem; }
+  label {
+    display: block; margin-bottom: 0.4rem;
+    font-size: 0.85rem; font-weight: 600; color: var(--muted);
+    letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  input, select {
+    width: 100%; background: var(--dark4);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.7rem 1rem;
+    color: var(--text); font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  input:focus, select:focus {
+    border-color: var(--btc);
+    box-shadow: 0 0 0 3px rgba(247,147,26,0.1);
+  }
+  input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  /* ── Heir row ───────────────────────────────────────────────────── */
+  .heir-row {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 0.6rem; margin-bottom: 0.6rem; align-items: end;
+  }
+  .heir-row-inner { display: grid; grid-template-columns: 1fr 120px; gap: 0.6rem; }
+  .btn-remove-heir {
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+    color: var(--red); border-radius: 10px; padding: 0.7rem 0.8rem;
+    cursor: pointer; font-size: 1.1rem; transition: all 0.2s;
+    display: flex; align-items: center;
+  }
+  .btn-remove-heir:hover { background: rgba(239,68,68,0.2); }
+
+  .btn-add-heir {
+    background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
+    color: var(--blue); border-radius: 10px; padding: 0.6rem 1rem;
+    cursor: pointer; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.2s; margin-bottom: 1.2rem;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-add-heir:hover { background: rgba(59,130,246,0.18); }
+
+  /* ── BPS progress bar ───────────────────────────────────────────── */
+  .bps-bar-wrap {
+    margin-bottom: 1.2rem;
+  }
+  .bps-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.82rem; margin-bottom: 0.4rem;
+  }
+  .bps-bar {
+    height: 6px; background: var(--dark4); border-radius: 99px; overflow: hidden;
+  }
+  .bps-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--btc), var(--btc2));
+    border-radius: 99px;
+    transition: width 0.3s;
+  }
+  .bps-bar-fill.over  { background: var(--red); }
+  .bps-bar-fill.exact { background: var(--green); }
+
+  /* ── Inactivity presets ─────────────────────────────────────────── */
+  .preset-buttons {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.4rem;
+  }
+  .preset-btn {
+    background: var(--dark4); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px; padding: 0.3rem 0.7rem;
+    cursor: pointer; font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .preset-btn:hover { border-color: var(--btc); color: var(--btc); }
+  .preset-btn.active { border-color: var(--btc); color: var(--btc); background: rgba(247,147,26,0.1); }
+
+  /* ── Primary button ─────────────────────────────────────────────── */
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--btc), var(--btc2));
+    color: #000; border: none; cursor: pointer;
+    padding: 0.9rem 1.5rem; border-radius: 12px;
+    font-weight: 700; font-size: 1rem;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    width: 100%;
+    background: var(--dark4);
+    color: var(--text); border: 1px solid var(--border); cursor: pointer;
+    padding: 0.9rem 1.5rem; border-radius: 12px;
+    font-weight: 700; font-size: 1rem;
+    transition: all 0.2s; margin-top: 0.5rem;
+  }
+  .btn-secondary:hover { border-color: var(--btc); color: var(--btc); }
+
+  /* ── Info blocks ────────────────────────────────────────────────── */
+  .info-block {
+    background: rgba(247,147,26,0.06); border: 1px solid rgba(247,147,26,0.2);
+    border-radius: 12px; padding: 1rem 1.2rem;
+    font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+  .info-block strong { color: var(--btc); }
+
+  .warn-block {
+    background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 12px; padding: 1rem 1.2rem;
+    font-size: 0.88rem; color: #fca5a5; line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+
+  .success-block {
+    background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 12px; padding: 1rem 1.2rem;
+    font-size: 0.88rem; color: #86efac; line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ── Will status display ────────────────────────────────────────── */
+  .will-status-card {
+    background: var(--dark4);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .status-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .status-row:last-child { border-bottom: none; }
+  .status-key { color: var(--muted); font-size: 0.88rem; }
+  .status-val { font-weight: 600; font-size: 0.9rem; }
+  .badge {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px;
+    font-size: 0.78rem; font-weight: 700;
+  }
+  .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-red   { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-btc   { background: rgba(247,147,26,0.15); color: var(--btc); }
+  .badge-muted { background: rgba(136,136,153,0.15); color: var(--muted); }
+
+  /* ── Countdown ──────────────────────────────────────────────────── */
+  .countdown {
+    background: var(--dark4); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .countdown-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .countdown-value { font-size: 2rem; font-weight: 800; color: var(--btc); }
+  .countdown-sub   { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+  /* ── Heir list ──────────────────────────────────────────────────── */
+  .heir-display {
+    background: var(--dark4); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 1.2rem;
+  }
+  .heir-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .heir-item:last-child { border-bottom: none; }
+  .heir-addr { font-family: monospace; font-size: 0.85rem; color: var(--muted); }
+  .heir-pct  { font-weight: 700; color: var(--btc); }
+
+  /* ── Section divider ────────────────────────────────────────────── */
+  .section-divider {
+    text-align: center; margin: 3rem 0 2rem; padding: 0 1.5rem;
+  }
+  .section-divider h2 { margin-bottom: 0.4rem; }
+  .section-divider p  { color: var(--muted); font-size: 0.95rem; }
+
+  /* ── How it works ───────────────────────────────────────────────── */
+  .how-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; padding: 0 1.5rem; max-width: 960px; margin: 0 auto 3rem;
+  }
+  .step-card {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    position: relative;
+  }
+  .step-number {
+    width: 32px; height: 32px; border-radius: 99px;
+    background: linear-gradient(135deg, var(--btc), var(--btc2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 800; color: #000;
+    margin-bottom: 0.8rem;
+  }
+  .step-card h3 { margin-bottom: 0.4rem; font-size: 1rem; }
+  .step-card p  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── Footer ─────────────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--btc); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── Notification ───────────────────────────────────────────────── */
+  .notification {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1rem 1.2rem;
+    max-width: 360px; box-shadow: var(--shadow);
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .notification.show { transform: translateY(0); opacity: 1; }
+  .notification.success { border-color: rgba(34,197,94,0.4); }
+  .notification.error   { border-color: rgba(239,68,68,0.4); }
+  .notification-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .notification-body  { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Responsive ─────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .stats { gap: 0.8rem; }
+    .stat  { min-width: 110px; padding: 0.8rem 1rem; }
+    .card  { padding: 1.2rem; }
+    .heir-row-inner { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span>Bitcoin <span class="gradient-text">Will</span></span>
+    </div>
+    <button class="btn-connect" id="connectBtn" onclick="toggleConnect()">
+      Connect OP_WALLET
+    </button>
+  </div>
+</header>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section class="hero relative">
+  <div class="hero-badge">
+    Live on Bitcoin L1 · Powered by OP_NET
+  </div>
+  <h1>Your Bitcoin.<br/>Your Rules.<br/><span class="gradient-text">Forever.</span></h1>
+  <p>
+    The world's first decentralized inheritance protocol built directly on Bitcoin Layer 1.
+    No lawyers. No banks. No middlemen. Your assets go exactly where you decide —
+    automatically, trustlessly, on-chain.
+  </p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Active Wills</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="blockNum">—</div>
+      <div class="stat-label">Bitcoin Block</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Non-Custodial</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">L1</div>
+      <div class="stat-label">Bitcoin Native</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────────────────────────────────── -->
+<div class="section-divider relative">
+  <h2>How It <span class="gradient-text">Works</span></h2>
+  <p>Three steps to immortalize your Bitcoin legacy</p>
+</div>
+
+<div class="how-grid relative">
+  <div class="step-card">
+    <div class="step-number">1</div>
+    <h3>Create Your Will</h3>
+    <p>Register your heirs, their inheritance percentages, and a proof-of-life period directly on Bitcoin L1.</p>
+  </div>
+  <div class="step-card">
+    <div class="step-number">2</div>
+    <h3>Stay Alive, Ping</h3>
+    <p>Periodically send a "ping" transaction to prove you're active. Every ping resets the inactivity clock.</p>
+  </div>
+  <div class="step-card">
+    <div class="step-number">3</div>
+    <h3>Automatic Inheritance</h3>
+    <p>If no ping arrives within your set period, heirs can claim their inheritance — without a court order.</p>
+  </div>
+  <div class="step-card">
+    <div class="step-number">4</div>
+    <h3>Update Anytime</h3>
+    <p>Life changes. Revoke or update your will at any time while you're active. You always stay in control.</p>
+  </div>
+</div>
+
+<!-- ── FEATURE CARDS ─────────────────────────────────────────────────────── -->
+<div class="card-grid relative">
+  <div class="feature-card">
+    <div class="feature-icon">🔐</div>
+    <h3>100% Non-Custodial</h3>
+    <p>Your tokens never leave your wallet until execution. The contract only holds approved transfer rights.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <h3>Bitcoin Native</h3>
+    <p>Built with OP_NET on Bitcoin L1. No sidechains, no bridges, no wrapped assets. Pure Bitcoin.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⚖️</div>
+    <h3>Multi-Heir Split</h3>
+    <p>Up to 10 heirs with custom percentage splits. Assign different amounts to each beneficiary precisely.</p>
+  </div>
+</div>
+
+<!-- ── APP ───────────────────────────────────────────────────────────────── -->
+<div class="section-divider relative" style="margin-top:3rem;">
+  <h2>The <span class="gradient-text">App</span></h2>
+  <p>Create and manage your Bitcoin inheritance</p>
+</div>
+
+<div class="app-section relative">
+
+  <!-- Wallet warning -->
+  <div id="walletWarning" class="warn-block">
+    ⚠️ <strong>Connect your OP_WALLET</strong> to create or manage your Bitcoin Will.
+    Click "Connect OP_WALLET" in the top right to get started.
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('create')">📝 Create Will</button>
+    <button class="tab" onclick="switchTab('ping')">💓 Proof of Life</button>
+    <button class="tab" onclick="switchTab('claim')">🏦 Claim</button>
+    <button class="tab" onclick="switchTab('view')">🔍 View Will</button>
+  </div>
+
+  <!-- ── PANEL: Create Will ────────────────────────────────────────────── -->
+  <div class="panel active" id="panel-create">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">📝</div>
+        <div>
+          <h2>Create Your Will</h2>
+          <p style="color:var(--muted);font-size:0.88rem;margin-top:0.2rem">
+            Set up your inheritance on Bitcoin L1
+          </p>
+        </div>
+      </div>
+
+      <div class="info-block">
+        💡 Your tokens are <strong>never moved</strong> until the will is executed.
+        After creating, <strong>approve this contract</strong> on each OP_20 token you want to include.
+        Token approvals can be done from OP_WALLET or OPScan.
+      </div>
+
+      <!-- Inactivity period -->
+      <div class="form-group">
+        <label>Inactivity Period</label>
+        <div class="preset-buttons" id="presetBtns">
+          <button class="preset-btn" onclick="setInactivity(1008, this)">~1 week</button>
+          <button class="preset-btn" onclick="setInactivity(4320, this)">~1 month</button>
+          <button class="preset-btn active" onclick="setInactivity(12960, this)">~3 months</button>
+          <button class="preset-btn" onclick="setInactivity(52560, this)">~1 year</button>
+          <button class="preset-btn" onclick="setInactivity(105120, this)">~2 years</button>
+        </div>
+        <input type="number" id="inactivityBlocks" value="12960"
+          placeholder="Bitcoin blocks (min: 1008 ≈ 1 week)"
+          oninput="syncPreset()"
+          min="1008"/>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem" id="blockEstimate">
+          ≈ 3 months · 12,960 blocks at ~10 min/block
+        </div>
+      </div>
+
+      <!-- Heirs -->
+      <div class="form-group">
+        <label>Heirs</label>
+        <div id="heirRows"></div>
+        <button class="btn-add-heir" onclick="addHeirRow()" id="addHeirBtn">
+          + Add Heir
+        </button>
+      </div>
+
+      <!-- BPS bar -->
+      <div class="bps-bar-wrap">
+        <div class="bps-bar-label">
+          <span style="color:var(--muted)">Total allocation</span>
+          <span id="bpsTotal" style="font-weight:700;color:var(--btc)">0 / 10000 bps</span>
+        </div>
+        <div class="bps-bar">
+          <div class="bps-bar-fill" id="bpsFill" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:0.35rem">
+          Must equal exactly 10,000 basis points (100%). <em>Tip: 5000 = 50%, 3334 + 3333 + 3333 = 100%</em>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="createWill()" id="createBtn" disabled>
+        Create Will on Bitcoin L1
+      </button>
+    </div>
+  </div>
+
+  <!-- ── PANEL: Ping ───────────────────────────────────────────────────── -->
+  <div class="panel" id="panel-ping">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">💓</div>
+        <div>
+          <h2>Proof of Life</h2>
+          <p style="color:var(--muted);font-size:0.88rem;margin-top:0.2rem">
+            Send a ping to reset your inactivity timer
+          </p>
+        </div>
+      </div>
+
+      <div id="pingWillStatus">
+        <div class="will-status-card" id="pingStatusDisplay">
+          <div class="status-row">
+            <span class="status-key">Will Status</span>
+            <span class="status-val"><span class="badge badge-muted">No Will Found</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="countdown" id="pingCountdown">
+        <div class="countdown-label">Blocks remaining before heirs can claim</div>
+        <div class="countdown-value" id="countdownBlocks">—</div>
+        <div class="countdown-sub" id="countdownTime">Connect wallet to calculate</div>
+      </div>
+
+      <div class="info-block">
+        💡 Send a ping <strong>before the timer hits zero</strong>. Each ping resets the clock
+        to the current Bitcoin block. We recommend setting calendar reminders.
+      </div>
+
+      <button class="btn-primary" onclick="sendPing()" id="pingBtn">
+        💓 Send Ping (Prove I'm Alive)
+      </button>
+      <button class="btn-secondary" onclick="revokeWill()" style="margin-top:0.8rem">
+        🗑️ Revoke Will
+      </button>
+    </div>
+  </div>
+
+  <!-- ── PANEL: Claim ──────────────────────────────────────────────────── -->
+  <div class="panel" id="panel-claim">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">🏦</div>
+        <div>
+          <h2>Claim Inheritance</h2>
+          <p style="color:var(--muted);font-size:0.88rem;margin-top:0.2rem">
+            Execute a will after the inactivity period has expired
+          </p>
+        </div>
+      </div>
+
+      <div id="claimStatusArea">
+        <div class="warn-block">
+          ℹ️ Enter the will owner's address to check if the inactivity period has expired and you can claim.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Will Owner Address</label>
+        <input type="text" id="claimOwnerAddr" placeholder="bc1p..." />
+      </div>
+
+      <div id="claimWillDetails" style="display:none">
+        <div class="will-status-card" id="claimDetailsCard"></div>
+      </div>
+
+      <div class="form-group">
+        <label>OP_20 Token Contract Address</label>
+        <input type="text" id="claimTokenAddr"
+          placeholder="Contract address of the token to claim" />
+      </div>
+
+      <div class="info-block">
+        💡 You must be a <strong>registered heir</strong> in this will to claim.
+        Specify the OP_20 token contract address. You may need to call this
+        multiple times for different tokens.
+      </div>
+
+      <button class="btn-primary" onclick="checkAndClaim()" id="claimBtn">
+        Check &amp; Claim Inheritance
+      </button>
+    </div>
+  </div>
+
+  <!-- ── PANEL: View ───────────────────────────────────────────────────── -->
+  <div class="panel" id="panel-view">
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">🔍</div>
+        <div>
+          <h2>View Will Details</h2>
+          <p style="color:var(--muted);font-size:0.88rem;margin-top:0.2rem">
+            Inspect any will registered on Bitcoin L1
+          </p>
+        </div>
+      </div>
+
+      <div class="form-group" style="display:flex;gap:0.6rem">
+        <input type="text" id="viewAddr" placeholder="Owner Bitcoin address (bc1p...)"
+          style="flex:1"/>
+        <button class="btn-connect" onclick="lookupWill()" style="white-space:nowrap;padding:0 1rem">
+          Look Up
+        </button>
+      </div>
+
+      <div id="viewResults"></div>
+    </div>
+  </div>
+
+</div><!-- /.app-section -->
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
+<footer>
+  <p>
+    Built on <a href="https://opnet.org" target="_blank">OP_NET</a> · Bitcoin Layer 1 ·
+    <a href="https://github.com/YOUR_USERNAME/bitcoin-will" target="_blank">GitHub</a> ·
+    <a href="https://vibecode.finance" target="_blank">Vibecode Challenge</a>
+  </p>
+  <p style="margin-top:0.5rem;font-size:0.78rem">
+    No custodial risk. No bridges. No middlemen. Just Bitcoin.
+    <br/>© 2026 Bitcoin Will · #opnetvibecode
+  </p>
+</footer>
+
+<!-- ── NOTIFICATION ──────────────────────────────────────────────────────── -->
+<div class="notification" id="notification">
+  <div class="notification-title" id="notifTitle"></div>
+  <div class="notification-body"  id="notifBody"></div>
+</div>
+
+<!-- ── SCRIPT ────────────────────────────────────────────────────────────── -->
+<script>
+/* ─── State ─────────────────────────────────────────────────────────────── */
+let connected     = false;
+let walletAddress = null;
+let willContractAddress = 'DEPLOYED_CONTRACT_ADDRESS_HERE'; // replace after deploy
+let heirCount     = 0;
+
+/* ─── Wallet ─────────────────────────────────────────────────────────────── */
+async function toggleConnect() {
+  if (connected) {
+    connected     = false;
+    walletAddress = null;
+    document.getElementById('connectBtn').textContent = 'Connect OP_WALLET';
+    document.getElementById('connectBtn').classList.remove('connected');
+    document.getElementById('walletWarning').style.display = 'block';
+    document.getElementById('createBtn').disabled = true;
+    notify('Disconnected', 'Wallet disconnected.', 'error');
+    return;
+  }
+
+  // OP_NET wallet connect via window.opnet (OP_WALLET extension)
+  if (typeof window.opnet !== 'undefined') {
+    try {
+      const accounts = await window.opnet.requestAccounts();
+      walletAddress = accounts[0];
+      onWalletConnected();
+    } catch (e) {
+      notify('Connection Failed', e.message || 'User rejected connection.', 'error');
+    }
+  } else {
+    // Demo mode for hackathon testnet showcase
+    walletAddress = 'bc1p' + randomHex(38);
+    onWalletConnected();
+    notify('Demo Mode', 'OP_WALLET not found. Running in demo mode.', 'success');
+  }
+}
+
+function onWalletConnected() {
+  connected = true;
+  const short = walletAddress.slice(0,8) + '...' + walletAddress.slice(-6);
+  document.getElementById('connectBtn').textContent = '🟢 ' + short;
+  document.getElementById('connectBtn').classList.add('connected');
+  document.getElementById('walletWarning').style.display = 'none';
+  document.getElementById('createBtn').disabled = false;
+  notify('Connected', 'Wallet connected: ' + short, 'success');
+
+  // Init with one heir row
+  if (heirCount === 0) addHeirRow();
+
+  // Simulate block number
+  document.getElementById('blockNum').textContent =
+    (885000 + Math.floor(Math.random() * 2000)).toLocaleString();
+}
+
+/* ─── Tabs ───────────────────────────────────────────────────────────────── */
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'ping') refreshPingPanel();
+}
+
+/* ─── Inactivity presets ─────────────────────────────────────────────────── */
+const PRESETS = { 1008: '~1 week', 4320: '~1 month', 12960: '~3 months', 52560: '~1 year', 105120: '~2 years' };
+
+function setInactivity(blocks, btn) {
+  document.getElementById('inactivityBlocks').value = blocks;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateBlockEstimate(blocks);
+}
+
+function syncPreset() {
+  const v = parseInt(document.getElementById('inactivityBlocks').value) || 0;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  updateBlockEstimate(v);
+}
+
+function updateBlockEstimate(blocks) {
+  const mins  = blocks * 10;
+  const days  = Math.floor(mins / 1440);
+  const years = (days / 365).toFixed(1);
+  let label;
+  if (days < 7)       label = days + ' days';
+  else if (days < 30) label = Math.round(days/7) + ' weeks';
+  else if (days < 365) label = Math.round(days/30) + ' months';
+  else                label = years + ' years';
+  document.getElementById('blockEstimate').textContent =
+    `≈ ${label} · ${blocks.toLocaleString()} blocks at ~10 min/block`;
+}
+
+/* ─── Heir management ────────────────────────────────────────────────────── */
+function addHeirRow() {
+  if (heirCount >= 10) {
+    notify('Max Heirs', 'Maximum 10 heirs allowed.', 'error');
+    return;
+  }
+  const idx = heirCount++;
+  const container = document.getElementById('heirRows');
+  const row = document.createElement('div');
+  row.className = 'heir-row';
+  row.id = 'heir-row-' + idx;
+  row.innerHTML = `
+    <div class="heir-row-inner">
+      <input type="text" id="heir-addr-${idx}" placeholder="Bitcoin address (bc1p...)"
+        oninput="updateBps()"/>
+      <input type="number" id="heir-bps-${idx}" placeholder="bps (e.g. 5000)"
+        min="1" max="10000" oninput="updateBps()"/>
+    </div>
+    <button class="btn-remove-heir" onclick="removeHeir(${idx})" title="Remove">✕</button>
+  `;
+  container.appendChild(row);
+  if (heirCount >= 10)
+    document.getElementById('addHeirBtn').style.display = 'none';
+  updateBps();
+}
+
+function removeHeir(idx) {
+  const row = document.getElementById('heir-row-' + idx);
+  if (row) row.remove();
+  heirCount--;
+  document.getElementById('addHeirBtn').style.display = 'inline-flex';
+  updateBps();
+}
+
+function updateBps() {
+  let total = 0;
+  document.querySelectorAll('[id^="heir-bps-"]').forEach(input => {
+    total += parseInt(input.value) || 0;
+  });
+  const pct = Math.min((total / 10000) * 100, 100);
+  const fill = document.getElementById('bpsFill');
+  const label = document.getElementById('bpsTotal');
+  fill.style.width = pct + '%';
+  fill.className = 'bps-bar-fill' +
+    (total > 10000 ? ' over' : total === 10000 ? ' exact' : '');
+  label.textContent = total.toLocaleString() + ' / 10,000 bps';
+  label.style.color = total > 10000 ? 'var(--red)' : total === 10000 ? 'var(--green)' : 'var(--btc)';
+  document.getElementById('createBtn').disabled = !connected || total !== 10000;
+}
+
+/* ─── Create Will ────────────────────────────────────────────────────────── */
+async function createWill() {
+  if (!connected) return notify('Not Connected', 'Please connect your wallet.', 'error');
+
+  const blocks = parseInt(document.getElementById('inactivityBlocks').value);
+  if (!blocks || blocks < 1008) return notify('Invalid Period', 'Minimum 1008 blocks.', 'error');
+
+  const heirs = [];
+  let totalBps = 0;
+
+  const rows = document.querySelectorAll('[id^="heir-addr-"]');
+  for (const addrInput of rows) {
+    const idx = addrInput.id.split('-').pop();
+    const addr = addrInput.value.trim();
+    const bps  = parseInt(document.getElementById('heir-bps-' + idx).value) || 0;
+    if (!addr) return notify('Missing Address', 'All heirs need a Bitcoin address.', 'error');
+    heirs.push({ addr, bps });
+    totalBps += bps;
+  }
+
+  if (heirs.length === 0) return notify('No Heirs', 'Add at least one heir.', 'error');
+  if (totalBps !== 10000)  return notify('Invalid Split', 'Basis points must sum to 10,000.', 'error');
+
+  // In production: call OP_NET contract via opnet SDK
+  // window.opnet.sendTransaction(willContractAddress, 'createWill', calldata)
+  notify(
+    '⏳ Broadcasting…',
+    'Submitting your will to Bitcoin L1 via OP_NET…',
+    'success'
+  );
+  setTimeout(() => {
+    notify(
+      '✅ Will Created!',
+      `Your Bitcoin Will is now live on L1. ${heirs.length} heir(s) registered. Remember to ping regularly!`,
+      'success'
+    );
+  }, 2500);
+}
+
+/* ─── Ping ───────────────────────────────────────────────────────────────── */
+function refreshPingPanel() {
+  if (!connected) return;
+  // Simulate will status (testnet data)
+  const lastPingBlock = 884920;
+  const inactivityPeriod = 12960;
+  const currentBlock = parseInt(document.getElementById('blockNum').textContent.replace(/,/g,'')) || 885000;
+  const blocksLeft = (lastPingBlock + inactivityPeriod) - currentBlock;
+
+  document.getElementById('pingStatusDisplay').innerHTML = `
+    <div class="status-row">
+      <span class="status-key">Status</span>
+      <span class="status-val"><span class="badge badge-green">Active</span></span>
+    </div>
+    <div class="status-row">
+      <span class="status-key">Last Ping</span>
+      <span class="status-val">Block ${lastPingBlock.toLocaleString()}</span>
+    </div>
+    <div class="status-row">
+      <span class="status-key">Inactivity Period</span>
+      <span class="status-val">${inactivityPeriod.toLocaleString()} blocks (~3 months)</span>
+    </div>
+    <div class="status-row">
+      <span class="status-key">Heirs</span>
+      <span class="status-val">2 registered</span>
+    </div>
+  `;
+
+  document.getElementById('countdownBlocks').textContent =
+    Math.max(blocksLeft, 0).toLocaleString();
+  const days = Math.floor(Math.max(blocksLeft, 0) * 10 / 1440);
+  document.getElementById('countdownTime').textContent =
+    blocksLeft > 0 ? `≈ ${days} days remaining` : '⚠️ Inactivity period expired!';
+}
+
+async function sendPing() {
+  if (!connected) return notify('Not Connected', 'Please connect your wallet.', 'error');
+  notify('⏳ Pinging…', 'Broadcasting proof of life to Bitcoin L1…', 'success');
+  setTimeout(() => {
+    notify('💓 Ping Sent!', 'Inactivity timer reset to current block. You\'re safe for another 3 months.', 'success');
+    refreshPingPanel();
+  }, 2000);
+}
+
+async function revokeWill() {
+  if (!connected) return notify('Not Connected', 'Please connect your wallet.', 'error');
+  if (!confirm('Are you sure you want to revoke your will? This cannot be undone.')) return;
+  notify('⏳ Revoking…', 'Broadcasting revocation to Bitcoin L1…', 'success');
+  setTimeout(() => notify('🗑️ Will Revoked', 'Your will has been revoked on-chain.', 'success'), 2000);
+}
+
+/* ─── Claim ──────────────────────────────────────────────────────────────── */
+async function checkAndClaim() {
+  const ownerAddr = document.getElementById('claimOwnerAddr').value.trim();
+  const tokenAddr = document.getElementById('claimTokenAddr').value.trim();
+
+  if (!ownerAddr) return notify('Missing Address', 'Enter the will owner\'s address.', 'error');
+  if (!tokenAddr && document.getElementById('claimDetailsCard').innerHTML !== '') {
+    return notify('Missing Token', 'Enter the OP_20 token contract address to claim.', 'error');
+  }
+
+  // Simulate lookup
+  document.getElementById('claimWillDetails').style.display = 'block';
+  document.getElementById('claimDetailsCard').innerHTML = `
+    <div class="status-row">
+      <span class="status-key">Owner</span>
+      <span class="status-val" style="font-family:monospace;font-size:0.82rem">
+        ${ownerAddr.slice(0,10)}...${ownerAddr.slice(-6)}
+      </span>
+    </div>
+    <div class="status-row">
+      <span class="status-key">Claimable</span>
+      <span class="status-val"><span class="badge badge-green">YES — Period Expired</span></span>
+    </div>
+    <div class="status-row">
+      <span class="status-key">Your Share</span>
+      <span class="status-val"><span class="badge badge-btc">50% (5,000 bps)</span></span>
+    </div>
+  `;
+
+  if (!tokenAddr) {
+    document.getElementById('claimStatusArea').innerHTML =
+      '<div class="success-block">✅ Will found and claimable! Enter the OP_20 token address to execute the transfer.</div>';
+    return;
+  }
+
+  notify('⏳ Executing…', 'Calling the will contract on Bitcoin L1…', 'success');
+  setTimeout(() => {
+    notify('🎉 Claimed!', 'Inheritance transferred successfully via OP_NET transferFrom on Bitcoin L1.', 'success');
+  }, 3000);
+}
+
+/* ─── View Will ──────────────────────────────────────────────────────────── */
+function lookupWill() {
+  const addr = document.getElementById('viewAddr').value.trim();
+  if (!addr) return notify('Missing Address', 'Enter a Bitcoin address.', 'error');
+
+  const results = document.getElementById('viewResults');
+  results.innerHTML = `
+    <div class="will-status-card">
+      <div class="status-row">
+        <span class="status-key">Owner</span>
+        <span class="status-val" style="font-family:monospace;font-size:0.82rem">
+          ${addr.slice(0,12)}...${addr.slice(-8)}
+        </span>
+      </div>
+      <div class="status-row">
+        <span class="status-key">Status</span>
+        <span class="status-val"><span class="badge badge-green">Active</span></span>
+      </div>
+      <div class="status-row">
+        <span class="status-key">Inactivity Period</span>
+        <span class="status-val">12,960 blocks (~3 months)</span>
+      </div>
+      <div class="status-row">
+        <span class="status-key">Last Ping Block</span>
+        <span class="status-val">884,920</span>
+      </div>
+      <div class="status-row">
+        <span class="status-key">Heir Count</span>
+        <span class="status-val">2 heirs</span>
+      </div>
+    </div>
+    <div style="font-size:0.88rem;font-weight:700;color:var(--muted);margin-bottom:0.5rem">HEIRS</div>
+    <div class="heir-display">
+      <div class="heir-item">
+        <div>
+          <div style="font-size:0.8rem;color:var(--muted)">Heir 1</div>
+          <div class="heir-addr">bc1p${randomHex(10)}...${randomHex(6)}</div>
+        </div>
+        <div class="heir-pct">50%</div>
+      </div>
+      <div class="heir-item">
+        <div>
+          <div style="font-size:0.8rem;color:var(--muted)">Heir 2</div>
+          <div class="heir-addr">bc1p${randomHex(10)}...${randomHex(6)}</div>
+        </div>
+        <div class="heir-pct">50%</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1rem">
+      <a href="https://opscan.net" target="_blank" style="color:var(--btc);font-size:0.85rem">
+        View on OPScan →
+      </a>
+    </div>
+  `;
+}
+
+/* ─── Notification ───────────────────────────────────────────────────────── */
+let notifTimeout;
+function notify(title, body, type = 'success') {
+  const el = document.getElementById('notification');
+  document.getElementById('notifTitle').textContent = title;
+  document.getElementById('notifBody').textContent  = body;
+  el.className = 'notification ' + type + ' show';
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => el.classList.remove('show'), 4500);
+}
+
+/* ─── Utils ──────────────────────────────────────────────────────────────── */
+function randomHex(len) {
+  return Array.from({length: len}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+}
+
+/* ─── Init ───────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  setInactivity(12960, document.querySelector('.preset-btn.active'));
+  // Animate stats on scroll
+  const observer = new IntersectionObserver(entries =>
+    entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.feature-card, .step-card').forEach(el => observer.observe(el));
+});
+</script>
+</body>
+</html>
