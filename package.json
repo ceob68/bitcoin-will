@@ -23,8 +23,8 @@
         "@btc-vision/as-pect-assembly": "^8.2.0",
         "@btc-vision/as-pect-cli": "^8.2.0",
         "@btc-vision/as-pect-transform": "^8.2.0",
-        "@types/node": "^25.3.0",
-        "prettier": "^3.8.1"
+        "@types/node": "^25.6.0",
+        "prettier": "^3.8.2"
     },
     "keywords": [
         "bitcoin",
